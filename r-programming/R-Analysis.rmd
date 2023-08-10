@@ -1,0 +1,173 @@
+---
+title: "Analysis"
+author: "Techarla Z Lewis"
+date: "2023-05-15"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+```{r load_file}
+
+pd<- read.csv(file.choose(),header=TRUE)
+pd.n <- nrow(pd)
+```
+
+
+## Introduction
+
+Data has been collected over the January - June 2023. The first data entry was entered on January 9th,2023, and the last was entered in June 2023. The data recorded over the past six months use categorical data of type nominal and ordinal values.  There was also quantitative data collected on ratio variables.
+
+|Type Of Variable	|Name of Variable  |Variable Measurement|
+|---|---|---|
+|Quantitative |	Date|	Date[dd-Mmm-Yy]|
+|Quantitative |	Hours Spent in Zoom|	Hours | 
+|Quantitative |	Hours Spent Studying	|Hours  |
+|Quantitative |	Hours Spent Sleeping|	Hours  |
+|Quantitative |	Number of times leaving the house	Unit |[Number]|
+|Categorical |	Did you watch the news today?	|Yes/No|
+|Categorical |	Accessed social media|	Yes/No|
+|Categorical |	Level of Cleanliness |	Scale 1-5 (1—Orderly Spotlessness indicators 2—Ordinary Tidiness 3—Casual Inattention 4—Moderate Dinginess 5—Unkempt Neglect)|
+|Quantitative |	Number of Kilometers walked|	Kilometers|
+
+ 
+
+Throughout this case study, I intend to analyze how I spend my  days and if they are as I've expected. I'll also analyze if there is any difference in the way my days are spent in semester one versus semester two. In addition to tracking number of kilometers walked , I will analyze the hours of sleep obtained and total hours spent studying. 
+
+```{r summary_stats}
+pd.analy<-subset(pd, select=c("KiloMeters.Walked", "Hours.Spent.Studying", "Hours.Spent.Sleeping"))
+summary(pd.analy)
+```
+
+Prior to commencing analysis on these three quantitative variables, I will need to confirm the conditions of independence assumption,randomization condition , 10% condition and nearly normal condition are met. 
+
+The independence and randomization condition are considered met for hours spent studying as these values are independent of each other and this is random as this data only covers the past 6 months of school whereas I have completed at least 96 months of school thus far.The 10% condition is considered met as 6 months is less than 10% of 96 months which I have completed whilst perusing my Bachelors degree and other certificates.
+```{r intro_hist_1}
+hist(pd$Hours.Spent.Studying,main="Total Time Spent Studying",xlab="Time Studying(Hours)",col="cyan",border="cornflowerblue")
+```
+<div align="right">Figure 1 </div>
+Based on Figure 1, we can conclude that the nearly normal condition is met as this graph is right skewed but it isn't extremely skewed.
+
+The independence and randomization condition are considered met for hours spent studying and total kilometers walked as these values are independent of each other and this is random as this data only covers the past 6 months whereas I would have been walking and sleeping from a young age.The 10% condition is considered met as 6 months is less than 10% of 240 months given I am older than 20 years of age .
+```{r intro_hist_2}
+hist(pd$Hours.Spent.Sleeping,main="Total Time Spent Sleeping",xlab="Time Sleeping(Hours)",col="cyan",border="cornflowerblue")
+```
+<div align="right">Figure 2</div>
+Based on Figure 2, we can conclude that the nearly normal condition is met for total hours sleeping as this histogram has a nearly unimodal shape.
+
+```{r intro_hist_3}
+hist(pd$KiloMeters.Walked,main="Total Distance Walked Daily",xlab="Distance Per Day(Kilometers)",col="cyan",border="cornflowerblue")
+
+```
+<div align="right">Figure 3 </div>
+Based on Figure 3, we can conclude that the nearly normal condition is met for total kilometers walked as this histogram has one peak however it is fairly uniformed.
+
+## Body
+### Part One: Confidence Intervals
+
+Based on the results provided from the t-test below, I am 95% confident that I spend 2.20 - 2.93 hours studying( 135- 175 mins). These results are not surprising as I don't study daily however when I do study I strive to study a minimum of four hours.
+```{r question_one_a}
+t.test(pd$Hours.Spent.Studying, conf.level = 0.95)
+```
+
+
+I am quite surprised that I am 95% confident I slept a between 7.78 and 8.09 hours each night over the past six months. I find it hard to get the bed at night as I typically consume coffee to assist me with staying up to complete studying. However, based on these results I can conclude I am getting adequate sleep daily.
+```{r question_one_b}
+t.test(pd$Hours.Spent.Sleeping, conf.level = 0.95)
+```
+
+At the beginning of 2023, I made the typical goal for myself to exercise more this year , I can confidently say I am 95% certain that I walked between 4.39 to 5.16 kilometers daily. This result is surprising yet reassuring to visually see I am remaining active.
+```{r question_one_c}
+t.test(pd$KiloMeters.Walked, conf.level = 0.95)
+```
+
+### Part Two: One‐Sample Hypothesis Tests
+The first hypothesis test will answer the question if I spend more than 3.13 hours studying daily as per McGill university students. This test has a p value of 0.9988 and a critical value of 1.654874. Given the p value is more than the hypothesis,level of significance 0.05,which means I will fail to reject the null. The term 'fail to reject the null' means there isn't sufficient evidence to support the claim that I spend at least 3.13 hours studying daily.
+
+$H_0: \mu = 3.13$
+
+$H_A: \mu \gt 3.13$
+```{r question_two_a}
+t.test(pd$Hours.Spent.Studying,mu = 3.13, alternative="greater")
+qt(0.05,df=153,lower.tail = FALSE)
+```
+
+The second hypothesis test will analyze if I spend an average eight hours sleeping daily. This hypothesis test was chosen because when I started learning more about health , most online resources recommended a minimum of eight hours rest nightly. Upon conducting the hypothesis test on hours slept over last 6 months, I obtained a p-value of 0.4229 and a critical value of 1.97559. Given the p value was significantly  greater then the level of significance I will fail to reject the null. This means there isn't sufficient data to support the claim that I do not spend 8 hours sleeping.
+
+$H_0: \mu = 8$
+
+$H_A: \mu \neq 8$
+```{r question_two_b}
+t.test(pd$Hours.Spent.Sleeping,mu=8, alternative="two.sided")
+qt(0.05/2,df=153)
+qt(0.05/2,df=153,lower.tail = FALSE)
+```
+
+The third hypothesis I will analyze is if I walk at least 5 kilometers daily. As I commenced the year, I decided I wanted to be more active when working from home, I initially set a daily goal of 3 kilometers however as It became more natural , my goal increased to 5 daily. In this test, I'll analysis the hypotheses that I walk 5 kilometers daily and an alternative hypothesis that I walk more than 5 kilometers daily. Based on the data captured over the last 5 months, the p-value is 0.8735 and a critical value of 1.654874. Given  the p-value , I will fail to reject the null hypothesis , which means there isn't enough evidence  to conclude that I walk more than 5 kilometers daily.
+
+$H_0: \mu = 5$
+
+$H_A: \mu \gt 5$
+```{r question_two_c}
+t.test(pd$KiloMeters.Walked,mu = 5.0, alternative="greater")
+qt(0.05,df=153,lower.tail = FALSE)
+```
+
+### Part Three : Two‐Sample Hypothesis Tests
+```{r question_three_aIndependence}
+W23 <- subset(pd, SemeterAttended == 'W23')
+S23 <- subset(pd, SemeterAttended == 'S23')
+```
+Both are these groups can be considered independent as they do not have any affect on each other. Although there are two consecutive semesters, the materials learnt would have been, different as well as the time required to grasp the materials taught in the courses. Another factor to consider would be the amount of courses taken as in semester 1(Winter 2023) I took 4 courses , whereas in semester two (Summer 2023), I'm taking five courses.
+```{r question_three_random10}
+#install.packages('dplyr', repos = "http://cran.us.r-project.org")   
+library("dplyr") 
+set.seed(1)
+W23r <- sample_n(W23,10)
+S23r <- sample_n(S23,10)
+```
+The fourth hypothesis test which will be conducted is a two two-sample t-test. This test was chosen give the data was selected at random. Prior to analyzing the data using the two sided test, I will confirm the conditions are met.The randomization and independent condition are considered met as the data was randomly selected from the set provided. The 10% condition is met for winter 23 semester as 10 is less than 11.9 which would be 10% of the sample. The 10% condition isn't met for the summer 2023 semester as this semester recently started. The nearly normal condition is considered met for both data sets as the histograms are uniformed.
+
+The purpose of this test is to analyze if I spent more time studying in semester one (w23) than I did in semester two(s23). Given a critical value of 1.73 and a p value of 0.2359. Using the probability value, we can fail to reject the null hypothesis. This means that there isn't sufficient evidence that there isn't a significant difference between the mean study for each semester
+
+$H_0: \mu 1 -  \mu S23 = 0$
+
+$H_A: \mu 1 - \mu S23 \gt  0$
+```{r question_three_b}
+hist(W23r$Hours.Spent.Studying,main="Total Time Spent Studying",xlab="Time Studying(Hours)",col="cyan",border="cornflowerblue")
+hist(S23r$Hours.Spent.Studying,main="Total Time Spent Studying",xlab="Time Studying(Hours)",col="cyan",border="cornflowerblue")
+
+t.test(W23r$Hours.Spent.Studying,S23r$Hours.Spent.Studying, alternative="greater")
+qt(0.05, 17.992, lower.tail=FALSE)
+
+```
+The fifth hypothesis test which will be conducted is a paired t-test. This was selected as we are matching observations. Given , the data is from the same individual,myself,analyzing studying habits in the first semester and the second semester. 
+
+Before analyzing the data, I will review the conditions and confirm they are met. The paired data condition is met as each entry in semester 1 has an associated entry to it in semester two. The independent and random condition are met as different courses were taken each semester and the first semester was my first time studying in 3 years whereas second semester I remember tips and tricks learned from semester one. The 10% condition can be considered met for semester 1 data as it is less than 10% however we can state this condition isn't met for semester two as alot of data hasn't been captured as yet.The nearly normal condition is considered met as the histogram for semester 1 and two are right skewed and nearly uniformed respectively.
+With a p-value of 0.7937 and a critical value of 2.100922. Using the probability value , I will fail to reject the null meaning there isn't significant difference in the mean study time per day between the two semesters.
+
+$H_0: \mu d w23-s23 = 0$
+
+$H_A: \mu d w23-s23 \gt  0$
+```{r question_three_c}
+w10 <- W23[1:10,]
+s10 <- S23[1:10,]
+hist(w10$Hours.Spent.Studying,main="Total Time Spent Studying",xlab="Time Studying(Hours)",col="cyan",border="cornflowerblue")
+hist(s10$Hours.Spent.Studying,main="Total Time Spent Studying",xlab="Time Studying(Hours)",col="cyan",border="cornflowerblue")
+
+t.test(w10$Hours.Spent.Studying,s10$Hours.Spent.Studying, 	alternative="two.sided", var.equal = FALSE , paired= TRUE)
+qt(0.05/2, df=10+10-2)
+qt(0.05/2, df=10+10-2,lower.tail = FALSE)
+
+```
+
+## Conclusion
+This report mainly focuses on how I spend my days as it relates to walking , sleeping, and studying. The overall analysis for the duration of my business analytics studies, indicate I spend 2.1 - 2.8 hours studying daily, 7.8-8.8 hours studying daily and walk an average of 4.4 - 5.2 kilometers daily.
+
+Additionally, this paper provides evidence to conclude I don't study more than the average McGill. Moreover, I also observed over the last 6 months I have not spent more than 8 hours sleeping nor walked an average of 5 kilometers ,daily.
+
+Further insight was taken to compare the habits in semester one and semester two . A paired and two sample test was taken on the first 10 days and 10 random days respectively and they showed there wasn't much difference in the means for the two semesters.
